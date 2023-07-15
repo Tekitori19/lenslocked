@@ -2,15 +2,28 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintf(w,"<h1>ADA WONG HOME PAGE</h1>")
+	// tplPath := filepath.Join("templates","home.gohtml")
+	tpl, err := template.ParseFiles("templates/home.gohtml")
+	if err != nil {
+		log.Printf("parsing templates %v", err)
+		http.Error(w,"There was an error parsing the template",http.StatusInternalServerError)
+		return
+	}
+	err = tpl.Execute(w, nil)
+	if err != nil {
+		log.Printf("execute templates %v", err)
+		http.Error(w,"There was an error execute the template",http.StatusInternalServerError)
+		return
+	}
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
@@ -46,8 +59,6 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Logger)
 
 	r.Get("/",homeHandler)
 	r.Get("/contact",contactHandler)
