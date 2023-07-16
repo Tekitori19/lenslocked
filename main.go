@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"lenslocked/views"
 	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -28,8 +30,14 @@ func parseAndExecuteTpl(w http.ResponseWriter, page string, data any) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	// tplPath := filepath.Join("templates","home.gohtml")
-	parseAndExecuteTpl(w, "home", nil)
+	tplPath := filepath.Join("templates", "home.gohtml")
+	tpl, err := views.Parse(tplPath)
+	if err != nil {
+		log.Printf("parsing templates %v", err)
+		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
+		return
+	}
+	tpl.Execute(w, nil)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
