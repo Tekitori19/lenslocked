@@ -2,65 +2,40 @@ package main
 
 import (
 	"fmt"
-	"html/template"
+	"lenslocked/controllers"
 	"lenslocked/views"
-	"log"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func parseAndExecuteTpl(w http.ResponseWriter, page string, data any) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tpl, err := template.ParseFiles(fmt.Sprintf("templates/%s.gohtml", page))
-
-	if err != nil {
-		log.Printf("parsing templates %v", err)
-		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
-		return
-	}
-
-	err = tpl.Execute(w, data)
-	if err != nil {
-		log.Printf("execute templates %v", err)
-		http.Error(w, "there was an error execute the template", http.StatusInternalServerError)
-		return
-	}
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := filepath.Join("templates", "home.gohtml")
-	tpl, err := views.Parse(tplPath)
-	if err != nil {
-		log.Printf("parsing templates %v", err)
-		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
-		return
-	}
-	tpl.Execute(w, nil)
-}
-
-func contactHandler(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	parseAndExecuteTpl(w, "contact", struct{ ID string }{ID: id})
-}
-
-func faqHandler(w http.ResponseWriter, r *http.Request) {
-	parseAndExecuteTpl(w, "faq", nil)
-}
-
 func main() {
 	r := chi.NewRouter()
+	//parse templete
+	tpl, err := views.Parse(filepath.Join("templates", "home.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/", controllers.StaticHandler(tpl))
 
-	r.Get("/", homeHandler)
-	r.Get("/contact", contactHandler)
-	r.Get("/contact/{id}", contactHandler)
-	r.Get("/faq", faqHandler)
+	tpl, err = views.Parse(filepath.Join("templates", "contact.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/contact", controllers.StaticHandler(tpl))
+	r.Get("/contact/{id}", controllers.StaticHandler(tpl))
+
+	tpl, err = views.Parse(filepath.Join("templates", "faq.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/faq", controllers.StaticHandler(tpl))
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Page not found", http.StatusNotFound)
+		http.Error(w, "Page not found :", http.StatusNotFound)
 	})
 
 	fmt.Println("server start at port 3000")
 
-	http.ListenAndServe(":3000", r)
+	http.ListenAndServe(":3001", r)
 }
