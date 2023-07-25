@@ -1,3 +1,15 @@
 <h1>FAQ page</h1>
-<h1>ahhahah</h1>
-<h1>bố mày nóng</h1>
+
+<ul>
+  {{range .}}
+  {{template "qa" .}}
+  {{
+    end
+  }}
+</ul>
+
+{{define "qa"}}
+<li>
+  <b>{{.Question}}</b> {{.Answer}}
+</li>
+{{ end }}
