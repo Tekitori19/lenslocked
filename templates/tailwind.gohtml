@@ -7,6 +7,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
+    <header class="bg-gradient-to-r from-blue-800 to-indigo-800 text-white">
+      <nav class="px-8 py-6 flex items-center">
+        <div class="text-4xl pr-12">📸 Lenslocked</div>
+        <div class="flex grow">
+          <a class="font-semibold ease-in duration-150 hover:text-gray-400 text-xl pr-8" href="/">Home</a>
+          <a class="font-semibold ease-in duration-150 hover:text-gray-400 text-xl pr-8" href="/contact">Contact</a>
+          <a class="font-semibold ease-in duration-150 hover:text-gray-400 text-xl pr-8" href="/faq">FAQ</a>
+        </div>
+        <div >
+          <a class="p-2 mr-2 hover:text-green-400" href="#">Sign in</a>
+          <a class="p-2 bg-blue-500 rounded-md hover:bg-blue-900 hover:text-yellow-400 duration-150 " href="#">Sign up</a>
+        </div>
+      </nav>
+    </header>
     {{ end }}
 
     {{define "footer"}}
